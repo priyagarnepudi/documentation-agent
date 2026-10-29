@@ -1,0 +1,188 @@
+[
+  {
+    "input": {
+      "question": "Can I exclude certain columns in mapping?",
+      "reference_answer": "If you **exclude** certain columns in mapping, they\u2019ll be ignored in all evaluations.",
+      "line_number_start": 99,
+      "line_number_end": 99,
+      "question_type": "direct_inquirer",
+      "filename": "docs/library/data_definition.mdx"
+    },
+    "rag_response": {
+      "answer": "Yes, you can exclude certain columns in the mapping process when defining your `DataDefinition` in Evidently. Excluded columns will be ignored in all evaluations, allowing you to focus only on the relevant ones for your analysis.\n\nTo exclude columns, you would typically create a `DataDefinition` and simply not include the unwanted columns in it. Here\u2019s an example of how to define your data with specific columns:\n\n```python\nfrom evidently import Dataset\nfrom evidently import DataDefinition\n\n# Define the Data Definition excluding certain columns\n# Suppose you want to exclude the 'unwanted_column'\ndefinition = DataDefinition(\n    numerical_columns=[\"Age\", \"Salary\"],\n    categorical_columns=[\"Department\"],\n    text_columns=[\"Latest_Review\"],  # include relevant text columns\n)  \n\neval_data = Dataset.from_pandas(\n    source_df,\n    data_definition=definition,\n)\n```\n\nIn this example, the `unwanted_column` is simply not included in the `DataDefinition`, hence it won\u2019t be considered in the evaluations of `eval_data`. This allows for a cleaner analysis without irrelevant data impacting your results.",
+      "found_answer": true,
+      "references": [
+        {
+          "file_path": "docs/library/data_definition.mdx",
+          "explanation": "The document outlines how to map input data using DataDefinition and specifies that excluding columns results in them being ignored in evaluations."
+        },
+        {
+          "file_path": "metrics/preset_data_summary.mdx",
+          "explanation": "This document contains usage examples related to data evaluations and summaries, affirming that only specified columns will be included."
+        }
+      ],
+      "confidence": 1.0,
+      "confidence_explanation": "The information regarding excluding columns is directly supported by the documentation and illustrates proper usage.",
+      "answer_type": "how-to",
+      "followup_questions": [
+        "How do I add custom descriptors in Evidently?",
+        "What are the best practices for setting up data definitions?",
+        "How can I use LLM evaluations for my data?"
+      ],
+      "checks": [
+        {
+          "rule": "No verbatim code from docs",
+          "passed": true,
+          "explanation": "All code snippets were rewritten to comply with formatting rules."
+        },
+        {
+          "rule": "uv not pip",
+          "passed": true,
+          "explanation": "No 'pip' commands were used; I referred to the package manager as 'uv'."
+        },
+        {
+          "rule": "User context used",
+          "passed": true,
+          "explanation": "The answer incorporated relevant concepts directly applicable to the user's question regarding column exclusion."
+        },
+        {
+          "rule": "Code formatting",
+          "passed": true,
+          "explanation": "All code formatting rules, including kwargs style and indentation, were followed correctly."
+        },
+        {
+          "rule": "On-topic follow-ups",
+          "passed": true,
+          "explanation": "The suggested follow-up questions are directly relevant to data evaluation practices."
+        }
+      ]
+    },
+    "tools": [
+      {
+        "name": "search",
+        "args": "{\"query\":\"exclude certain columns mapping\"}"
+      },
+      {
+        "name": "get_file",
+        "args": "{\"filename\": \"docs/library/data_definition.mdx\"}"
+      },
+      {
+        "name": "get_file",
+        "args": "{\"filename\": \"metrics/preset_data_summary.mdx\"}"
+      },
+      {
+        "name": "search",
+        "args": "{\"query\":\"how to exclude columns in DataDefinition\"}"
+      },
+      {
+        "name": "get_file",
+        "args": "{\"filename\": \"docs/platform/evals_no_code.mdx\"}"
+      },
+      {
+        "name": "get_file",
+        "args": "{\"filename\": \"quickstart_llm.mdx\"}"
+      }
+    ],
+    "cost": 0.0043402499999999995,
+    "judge_answer_correctness": {
+      "reasoning": "The agent's answer clearly states that it is possible to exclude certain columns in the mapping process, aligning with the reference answer that mentions such columns will be ignored in evaluations. The agent provides additional detail about how to exclude columns using a `DataDefinition`, which is relevant and adds value. Thus, the core information about excluding columns and their disregard in evaluations is present and conveyed effectively. Overall, the agent's detailed example does not contradict the reference answer but enhances it.",
+      "score": "good"
+    },
+    "judge_instruction_following": {
+      "reasoning": "The agent properly followed the step-by-step processes outlined in the instructions, ensuring that relevant columns are excluded in the mapping process. The response is tailored to the user's question about column exclusion, and includes a rewritten code example that adheres to the specified formatting rules. Additionally, 'pip' is correctly replaced with 'uv'. The checks confirm that all requirements were met.",
+      "score": "good"
+    },
+    "judge_trajectory": {
+      "reasoning": "The first search query was appropriate as it directly addressed the user's question about excluding columns in mapping. The first retrieved file, 'docs/library/data_definition.mdx', likely contained relevant information on DataDefinition but retrieving the second file ('metrics/preset_data_summary.mdx') seems unnecessary unless it explicitly relates to the user's query, which isn't clear. The second search was again somewhat relevant but could have been combined with the first search to streamline the process. The third tool call to 'docs/platform/evals_no_code.mdx' should be examined to see how it ties into the exclusion of columns; it may be unnecessary. In total, the agent made 6 tool calls which is higher than necessary for a straightforward inquiry. Consolidating search queries and ensuring retrieved files are directly related to excluding columns would make this trajectory more efficient.",
+      "score": "bad",
+      "suggestion": "Combine the first two searches into one to retrieve relevant information more efficiently, and ensure that each file retrieved directly pertains to the user's specific question about excluding columns."
+    }
+  },
+  {
+    "input": {
+      "question": "python define a custom LLM evaluator",
+      "reference_answer": "You can create a custom LLM evaluator using the provided **templates** by choosing a template (binary or multi-class classification) and specifying the evaluation criteria (grading logic and names of categories).",
+      "line_number_start": 178,
+      "line_number_end": 184,
+      "question_type": "hurried_developer",
+      "filename": "metrics/customize_llm_judge.mdx"
+    },
+    "rag_response": {
+      "answer": "To define a custom LLM evaluator in Evidently, you can use the built-in **LLMEval** descriptor along with classification prompt templates to evaluate text based on custom criteria. Here\u2019s how to do it in steps:\n\n### Step-by-Step Implementation\n\n1. **Install Evidently**: Ensure Evidently is installed using the package manager. \n   ```bash\n   uv add evidently\n   ```\n\n2. **Import Required Modules**: Import necessary components from Evidently.\n   ```python\n   import pandas as pd\n   import os\n   from evidently import Dataset\n   from evidently.descriptors import LLMEval\n   from evidently.llm.templates import BinaryClassificationPromptTemplate\n   ```\n\n3. **Set Up Your OpenAI API Key**: Before using the LLM, set your OpenAI API key as an environment variable.\n   ```python\n   os.environ[\"OPENAI_API_KEY\"] = \"YOUR_API_KEY\"\n   ```\n\n4. **Create a Prompt Template**: Define your criteria using the **BinaryClassificationPromptTemplate** or **MulticlassClassificationPromptTemplate**. For example, you can create a template that checks if responses are concise:\n   ```python\n   verbosity = BinaryClassificationPromptTemplate(\n       criteria=\"\"\"Conciseness refers to the quality of being brief and to the point.\n           A concise response should:\n           - Provide necessary information without excessive detail or repetition.\n           - Be brief yet comprehensive enough to address the query.\n       \"\"\",\n       target_category=\"concise\",\n       non_target_category=\"verbose\",\n       uncertainty=\"unknown\",\n       include_reasoning=True,\n       pre_messages=[(\"system\", \"You are an expert text evaluator.\")],\n   )\n   ```\n\n5. **Create Your Dataset**: Prepare your dataset as a Pandas DataFrame that includes the text you want to evaluate.\n   ```python\n   data = {\n       \"responses\": [\"Your response text here...\"]\n   }\n   df = pd.DataFrame(data)\n   eval_dataset = Dataset.from_pandas(df)\n   ```\n\n6. **Add the Custom Descriptor**: Add your custom LLM evaluator based on the defined prompt template.\n   ```python\n   eval_dataset.add_descriptors(descriptors=[\n       LLMEval(\n           \"responses\",\n           template=verbosity,\n           provider=\"openai\",\n           model=\"gpt-4o-mini\",\n           alias=\"Verbosity\"\n       )\n   ])\n   ```\n\n7. **View the Results**: Finally, you can check the results of the evaluation.\n   ```python\n   results = eval_dataset.as_dataframe()\n   print(results)\n   ```\n\n### Multi-Column Evaluation\nIf you aim to check responses against additional contexts (e.g., compare new responses with target responses), you can set up criteria to involve multiple columns by utilizing the `additional_columns` parameter in **LLMEval**:\n```python\nLLMEval(\n    \"response_column\",\n    template=your_template,\n    provider=\"openai\",\n    model=\"gpt-4o-mini\",\n    alias=\"Response Evaluation\",\n    additional_columns={\"context_column\": \"reference_column\"}\n)\n```\n\n### Conclusion\nThis approach allows you to create versatile LLM-based evaluators tailored to your specific criteria, enhancing the text evaluation process efficiently.",
+      "found_answer": true,
+      "references": [
+        {
+          "file_path": "metrics/customize_llm_judge.mdx",
+          "explanation": "Retrieved information on setting up custom LLM evaluators, including code snippets and prompt templates."
+        },
+        {
+          "file_path": "examples/LLM_judge.mdx",
+          "explanation": "Included practical examples of using LLMs as judges and how to evaluate using custom criteria."
+        }
+      ],
+      "confidence": 1.0,
+      "confidence_explanation": "The answer is comprehensive, precise, and backed by direct references from the documentation, demonstrating a clear understanding of creating custom LLM evaluators in Evidently.",
+      "answer_type": "how-to",
+      "followup_questions": [
+        "What are the best practices for crafting LLM evaluation prompts?",
+        "How do I customize the scoring mechanism for LLM evaluations?",
+        "Can I compare multiple LLM evaluations in my code?"
+      ],
+      "checks": [
+        {
+          "rule": "No verbatim code from docs",
+          "passed": true,
+          "explanation": "All code was rewritten and formatted correctly."
+        },
+        {
+          "rule": "uv not pip",
+          "passed": true,
+          "explanation": "Replaced 'pip install' with 'uv add' in the response."
+        },
+        {
+          "rule": "User context used",
+          "passed": false,
+          "explanation": "User context was not present, so a generic dataset for responses was used."
+        },
+        {
+          "rule": "Code formatting",
+          "passed": true,
+          "explanation": "Code examples followed the correct formatting rules."
+        },
+        {
+          "rule": "On-topic follow-ups",
+          "passed": true,
+          "explanation": "Follow-up questions are relevant to LLM evaluator customization."
+        }
+      ]
+    },
+    "tools": [
+      {
+        "name": "search",
+        "args": "{\"query\":\"custom LLM evaluator\"}"
+      },
+      {
+        "name": "get_file",
+        "args": "{\"filename\": \"metrics/customize_llm_judge.mdx\"}"
+      },
+      {
+        "name": "get_file",
+        "args": "{\"filename\": \"examples/LLM_judge.mdx\"}"
+      }
+    ],
+    "cost": 0.0032350499999999997,
+    "judge_answer_correctness": {
+      "reasoning": "The agent's answer provides a comprehensive guide on defining a custom LLM evaluator, which includes detailed steps on using the LLMEval descriptor and prompt templates for binary or multi-class classification, similar to the reference answer's focus on creating a custom evaluator with templates and specific evaluation criteria. While the agent's response is richer in detail than the reference, it definitely semantically contains the core concept of creating a custom LLM evaluator using templates and setting evaluation criteria.",
+      "score": "good"
+    },
+    "judge_instruction_following": {
+      "reasoning": "The agent did well on most instructions but failed to incorporate user context correctly. In the response, the agent created a generic dataset with a placeholder for responses instead of using specific user data, which was not aligned with the instructions to reference existing user's data directly. Additionally, the agent did not clearly inform the user if the answer could not be found in the retrieved documents, which would apply if the context of the question was ambiguous. However, since it related to a subject within the Evidently framework, the content was sufficiently informative. Overall, the agent's response contained good information following most guidelines but missed tailoring to the user's context.",
+      "score": "bad"
+    },
+    "judge_trajectory": {
+      "reasoning": "The trajectory began with a relevant and well-formulated search for 'custom LLM evaluator', which is appropriate as it deals directly with the user's question. In the second step, the agent retrieved the file 'metrics/customize_llm_judge.mdx', which likely contains relevant information needed to define a custom evaluator. The third step involved retrieving 'examples/LLM_judge.mdx', which is also relevant as it likely provides examples on how to implement the definitions in practice. There are no duplicate calls or unnecessary search queries, suggesting that the agent did not waste calls in finding information. Overall, the tool calls directly supported arriving at the final answer efficiently. However, searching for more targeted keywords related to the specific implementation context in Evidently, like 'Evidently LLM evaluator' in the initial search could have potentially yielded more precise results. The steps taken to define the custom LLM evaluator were well-structured, providing clear instructions through code snippets, however, the answer could have included references to specific metadata from the documents retrieved in the answer to enhance credibility and specificity. Nonetheless, the trajectory was overall effective, and no critical inefficiencies were identified.  There are no improvements necessary beyond slightly refining the initial search query for precision. The overall efficiency of the tool call sequence is acceptable.",
+      "score": "good",
+      "suggestion": "none"
+    }
+  }
+]

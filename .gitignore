@@ -1,0 +1,14 @@
+.venv
+tmp
+.env
+.cache
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+taxi.db
+taxi.db.wal
+yellow_tripdata_*.parquet
