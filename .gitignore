@@ -2,6 +2,7 @@
 tmp
 .env
 .cache
+.logfire/
 .env.*
 !.env.example
 __pycache__/

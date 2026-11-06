@@ -23,7 +23,7 @@ T = TypeVar('T', bound=BaseModel)
 
 @dataclass
 class TraceData:
-    """Raw data fetched from Logfire for a single agent run trace."""
+    """Latest conversation history and summed usage of all agent runs in a trace."""
     all_messages: list[dict]
     input_tokens: int = 0
     output_tokens: int = 0
@@ -46,13 +46,14 @@ def fetch_trace(trace_id: str, client: object) -> TraceData:
         WHERE trace_id = '{trace_id}'
           AND (span_name = 'agent run' OR span_name LIKE 'invoke_agent %')
         ORDER BY start_timestamp DESC
-        LIMIT 1
         """
     )
     rows = run_row['rows']
     if not rows:
         raise ValueError(f'No agent run span found for trace_id={trace_id}')
 
+    # Rows are newest first. Preserve the latest cumulative conversation history,
+    # but sum usage from every agent-run span (not model-call child spans).
     row = rows[0]
     all_messages = row['all_messages']
     if isinstance(all_messages, str):
@@ -60,8 +61,8 @@ def fetch_trace(trace_id: str, client: object) -> TraceData:
 
     return TraceData(
         all_messages=all_messages,
-        input_tokens=int(row.get('input_tokens') or 0),
-        output_tokens=int(row.get('output_tokens') or 0),
+        input_tokens=sum(int(item.get('input_tokens') or 0) for item in rows),
+        output_tokens=sum(int(item.get('output_tokens') or 0) for item in rows),
     )
 
 
@@ -97,7 +98,9 @@ def fetch_traces(trace_ids: list[str], client: object) -> dict[str, TraceData]:
     for row in run_rows['rows']:
         tid = row['trace_id']
         if tid in result:
-            continue  # keep first (most recent) per trace_id
+            result[tid].input_tokens += int(row.get('input_tokens') or 0)
+            result[tid].output_tokens += int(row.get('output_tokens') or 0)
+            continue  # Latest span already contains this conversation's history.
         all_messages = row['all_messages']
         if isinstance(all_messages, str):
             all_messages = json.loads(all_messages)
